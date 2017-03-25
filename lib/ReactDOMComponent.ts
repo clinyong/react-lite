@@ -1,4 +1,6 @@
 import { ReactElement } from "./ReactElement";
+import { instantiateReactComponent } from "./instantiateReactComponent";
+import * as ReactReconciler from "./ReactReconciler";
 
 // For quickly matching children type, to test if can be treated as content.
 const CONTENT_TYPES = { "string": true, "number": true };
@@ -22,6 +24,18 @@ export class ReactDOMComponent {
         this._tag = tag.toLowerCase();
     }
 
+    mountChildren(nestedChildren) {
+        const type = typeof nestedChildren;
+        if (type === "undefined" || type === "boolean") {
+            nestedChildren = null;
+        }
+
+        const renderedChildren = [].concat(nestedChildren).map(child => instantiateReactComponent(child, true));
+        const mountImages = renderedChildren.map(child => ReactReconciler.mountComponent(child));
+
+        return mountImages;
+    }
+
     _createInitialChildren(props, lazyTree: HTMLElement) {
         const contentToUse = CONTENT_TYPES[typeof props.children] ? props.children : null;
         const childrenToUse = contentToUse != null ? null : props.children;
@@ -29,7 +43,10 @@ export class ReactDOMComponent {
         if (contentToUse !== null) {
             lazyTree.textContent = contentToUse;
         } else if (childrenToUse !== null) {
-            // TODO
+            const mountImages = this.mountChildren(childrenToUse);
+            for (let child of mountImages) {
+                lazyTree.appendChild(child.node);
+            }
         }
     }
 
