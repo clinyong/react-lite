@@ -1,4 +1,4 @@
-import { ReactElement } from "./ReactElement";
+import { ReactElement, StatelessComponent } from "./ReactElement";
 import { ReactComponent } from "./ReactComponent";
 import { ReactDOMComponent } from "./ReactDOMComponent";
 import { instantiateReactComponent } from "./instantiateReactComponent";
@@ -9,33 +9,26 @@ let nextMountID = 1;
 export class ReactCompositeComponent {
     _currentElement: ReactElement;
     _mountOrder: number;
-    _instance: ReactComponent | null;
+    _instance: ReactComponent | ReactElement;
     _renderedComponent: ReactCompositeComponent | ReactDOMComponent;
 
     constructor(element) {
         this._currentElement = element;
     }
 
-    _constructComponent(publicProps) {
-        let Component = this._currentElement.type;
+    _constructComponent(publicProps): ReactElement {
+        let Component = this._currentElement.type as typeof ReactComponent;
 
-        if (typeof Component !== "string") {
-            return new Component(publicProps);
+        if (Component.isReactElement) {
+            const inst = new Component(publicProps);
+            return inst.render();
+        } else {
+            let Component = this._currentElement.type as StatelessComponent;
+            return Component(publicProps);
         }
-
-        return null;
     }
 
-    performInitialMount(renderedElement) {
-        const inst = this._instance;
-
-        // If not a stateless component, we now render
-        if (renderedElement === undefined) {
-            if (inst !== null) {
-                renderedElement = inst.render();
-            }
-        }
-
+    performInitialMount(renderedElement: ReactElement) {
         const child = instantiateReactComponent(renderedElement, true);
         this._renderedComponent = child;
         const markup = ReactReconciler.mountComponent(child);
@@ -45,9 +38,8 @@ export class ReactCompositeComponent {
     mountComponent() {
         this._mountOrder = nextMountID++;
         const publicProps = this._currentElement.props;
-        this._instance = this._constructComponent(publicProps);
+        let renderedElement = this._constructComponent(publicProps);
 
-        let renderedElement;
         const markup = this.performInitialMount(renderedElement);
         return markup;
     }

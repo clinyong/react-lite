@@ -8,6 +8,7 @@ interface ComponentLifecycle {
 }
 
 export class ReactComponent implements ComponentLifecycle {
+    static isReactElement = true;
     props: any;
     state: any;
     context: any;
@@ -19,5 +20,5 @@ export class ReactComponent implements ComponentLifecycle {
 
     forceUpdate() {}
     setState() {}
-    render() {}
+    render(): any {}
 }

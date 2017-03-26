@@ -3,14 +3,20 @@ import { ReactComponent } from "./ReactComponent";
 
 type Key = string | number;
 
+export interface StatelessComponent {
+    (props: any & { children?: any }, context?: any): ReactElement;
+    defaultProps?: Partial<any>;
+    displayName?: string;
+}
+
 export interface ReactElement {
     $$typeof: number | symbol;
-    type: string | typeof ReactComponent;
+    type: string | StatelessComponent | typeof ReactComponent;
     props: any;
     key?: Key | null;
 }
 
-export function createElement(type: string | typeof ReactComponent, config?: Object, children?): ReactElement {
+export function createElement(type: string | typeof ReactComponent | StatelessComponent, config?: Object, children?): ReactElement {
     let props: any = {};
 
     const childrenLength = arguments.length - 2;
