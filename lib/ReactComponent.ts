@@ -2,23 +2,18 @@
 // Component Specs and Lifecycle
 // ----------------------------------------------------------------------
 
-interface ComponentLifecycle {
-    componentWillMount?(): void;
-    componentDidMount?(): void;
-}
+export class ReactComponent<P, S> {
+	static isReactElement = true;
+	props: any;
+	state: S;
+	context: any;
+	refs: any;
 
-export class ReactComponent implements ComponentLifecycle {
-    static isReactElement = true;
-    props: any;
-    state: any;
-    context: any;
-    refs: any;
+	constructor(props?: P) {
+		this.props = props;
+	}
 
-    constructor(props) {
-        this.props = props;
-    }
-
-    forceUpdate() {}
-    setState() {}
-    render(): any {}
+	forceUpdate() {}
+	setState() {}
+	render(): any {}
 }
