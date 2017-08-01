@@ -5,7 +5,7 @@ import * as ReactReconciler from "./ReactReconciler";
 
 let topLevelRootCounter = 1;
 
-class TopLevelWrapper extends ReactComponent {
+class TopLevelWrapper extends ReactComponent<{}, {}> {
     static isReactComponent = {};
     static isReactTopLevelWrapper = true;
 
@@ -33,7 +33,7 @@ export function mountComponentIntoNode(wrapperInstance, container) {
 }
 
 export function render(nextElement, container) {
-    const nextWrappedElement = createElement(TopLevelWrapper, { children: nextElement });
+    const nextWrappedElement = createElement(TopLevelWrapper as typeof ReactComponent, { children: nextElement });
     const componentInstance = instantiateReactComponent(nextWrappedElement, false);
 
     mountComponentIntoNode(componentInstance, container);

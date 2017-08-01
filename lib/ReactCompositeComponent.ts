@@ -9,7 +9,7 @@ let nextMountID = 1;
 export class ReactCompositeComponent {
     _currentElement: ReactElement;
     _mountOrder: number;
-    _instance: ReactComponent | ReactElement;
+    _instance: ReactComponent<any, any> | ReactElement;
     _renderedComponent: ReactCompositeComponent | ReactDOMComponent;
 
     constructor(element) {
